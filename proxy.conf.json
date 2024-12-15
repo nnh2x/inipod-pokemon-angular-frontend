@@ -1,0 +1,8 @@
+{
+  "/pagead": {
+    "target": "https://www.youtube.com",
+    "secure": false,
+    "changeOrigin": true,
+    "logLevel": "debug"
+  }
+}

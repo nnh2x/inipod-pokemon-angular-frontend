@@ -1,0 +1,65 @@
+<div class="carousel relative container mx-auto">
+    <!-- Search -->
+    <div class="flex items-center gap-4 p-3">
+        <!-- Search Input Field -->
+        <form nz-form [formGroup]="search" class="flex grid-4">
+            <div class="">
+                <nz-input-group nzSearch>
+                    <input
+                        type="text"
+                        nz-input
+                        placeholder="Name Pokemon"
+                        formControlName="name"
+                    />
+                </nz-input-group>
+            </div>
+            <div class="px-2">
+                <nz-select
+                    nzShowSearch
+                    nzAllowClear
+                    nzPlaceHolder="Select a person"
+                    formControlName="type1"
+                >
+                    @for (type of store.types(); track $index) {
+                    <nz-option [nzLabel]="type" [nzValue]="type"></nz-option>
+                    }
+                </nz-select>
+            </div>
+        </form>
+
+        <!-- Search Button -->
+        <div class="flex justify-end items-end text-end px-2">
+            <button
+                nz-button
+                nzType="primary"
+                nzShape="circle"
+                (click)="filterPokemon()"
+            >
+                <span nz-icon nzType="search" nzTheme="outline"></span>
+            </button>
+        </div>
+
+        <div class="flex ml-10">
+            <input
+                type="file"
+                (change)="onFileSelected($event)"
+                placeholder=""
+                [disabled]="store.isLoading()"
+            />
+        </div>
+    </div>
+
+    <div class="flex-auto">
+        <app-table
+            [isLoading]="this.store.isLoading()"
+            [selectCheckbox]="false"
+            [columns]="columns"
+            [record]="this.store.pokemons()"
+            [nzTotal]="store.nzTotal()"
+            (pageChange)="handlePageIndexChange($event)"
+            (pageSizeChange)="handlePageSizeChange($event)"
+            (tableQueryParamsChange)="tableQueryParamsChange($event)"
+            (actionChange)="getDetail($event)"
+        ></app-table>
+    </div>
+</div>

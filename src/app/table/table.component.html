@@ -1,0 +1,143 @@
+<div class="justify-center items-center h-full">
+    <nz-table
+        [nzLoading]="isLoading"
+        nzShowSizeChanger
+        #nzTable
+        #headerTable
+        #rowSelectionTable
+        [nzData]="record"
+        nzSize="default"
+        nzTableLayout="fixed"
+        [nzFrontPagination]="false"
+        [nzTotal]="nzTotal"
+        (nzPageIndexChange)="onPageIndexChange($event)"
+        (nzPageSizeChange)="onPageSizeChange($event)"
+        (nzQueryParams)="onQueryParamsChange($event)"
+        [nzScroll]="{ y: heightTable }"
+    >
+        <thead>
+            <tr>
+                @if(selectCheckbox) {
+                <th
+                    [nzChecked]="checked"
+                    [nzIndeterminate]="indeterminate"
+                    nzLabel="Select all"
+                    nzWidth="40px"
+                    nzLeft
+                    (nzCheckedChange)="onAllChecked($event)"
+                ></th>
+                } @for (item of columns; track $index) {
+                <th
+                    nzCustomFilter
+                    [nzWidth]="item.width ?? '200px'"
+                    [nzSortFn]="true"
+                    [nzColumnKey]="item.field"
+                    [nzSortPriority]="true"
+                    [nzShowSort]="item.sort || false"
+                >
+                    {{ item.header }}
+                    <nz-filter-trigger [(nzVisible)]="visible">
+                    </nz-filter-trigger>
+                </th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @for (data of nzTable.data; track $index) {
+            <ng-container>
+                <tr>
+                    @if(selectCheckbox) {
+                    <ng-container>
+                        <td
+                            nzLeft
+                            [width]="20"
+                            nz-checkbox
+                            [nzChecked]="
+                                setOfCheckedId.has(data[keySelect ?? 'id'])
+                            "
+                            (nzCheckedChange)="
+                                updateCheckedSet(
+                                    data[keySelect ?? 'id'],
+                                    $event
+                                )
+                            "
+                        ></td>
+                    </ng-container>
+                    } @for (item of columns; track $index) {
+                    <ng-container>
+                        @if(item.icon) {
+                        <ng-container (click)="actionClick(data)">
+                            <td [width]="20" (click)="item?.event(data)">
+                                <span
+                                    nz-icon
+                                    [nzType]="item.icon"
+                                    nzTheme="outline"
+                                ></span>
+                            </td>
+                        </ng-container>
+                        } @if(!item.icon) {
+                        <ng-container>
+                            @if(item.tab !== undefined) {
+                            <ng-container>
+                                <td (click)="actionClick(data)">
+                                    <nz-tag
+                                        [nzColor]="
+                                            item.tab(
+                                                data[item.field]?.toString()
+                                            ).color
+                                        "
+                                    >
+                                        {{
+                                            item.optional
+                                                ? item.optional(
+                                                      data[
+                                                          item.field
+                                                      ]?.toString()
+                                                  )
+                                                : data[item.field]
+                                        }}
+                                    </nz-tag>
+                                </td>
+                            </ng-container>
+                            } @if(item.tab === undefined) {
+                            <ng-container>
+                                <td (click)="actionClick(data)">
+                                    {{
+                                        item.optional
+                                            ? item.optional(
+                                                  data[item.field]?.toString()
+                                              )
+                                            : data[item.field]
+                                    }}
+                                </td>
+                            </ng-container>
+                            }
+                        </ng-container>
+                        }
+                    </ng-container>
+                    }
+                </tr>
+            </ng-container>
+            }
+        </tbody>
+    </nz-table>
+    <nz-dropdown-menu #menu="nzDropdownMenu">
+        <div class="ant-table-filter-dropdown">
+            <div class="search-box">
+                <input type="text" nz-input placeholder="Search name" />
+                <button
+                    nz-button
+                    nzSize="small"
+                    nzType="primary"
+                    (click)="search()"
+                    class="search-button"
+                >
+                    Search
+                </button>
+                <button nz-button nzSize="small" (click)="reset()">
+                    Reset
+                </button>
+            </div>
+        </div>
+    </nz-dropdown-menu>
+</div>
